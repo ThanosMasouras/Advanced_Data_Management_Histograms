@@ -36,6 +36,7 @@ def equiwidth_histogram(income_data, bins):
 				bins_values[-1] = bins_values[j-1] + 1
 				break
 
+
 	return bins_boundaries, bins_values
 
 def equidepth_histogram(income_data, bins):
@@ -72,11 +73,54 @@ def print_histograms(income_data, bins_boundaries1, bins_values1, bins_boundarie
 	for i in range(len(bins_boundaries2)-1):
 		print("bin %d : [%.2f,%.2f),  numtuples:  %d)" % (i,bins_boundaries2[i],bins_boundaries2[i+1], bins_values2[i]))
 
+def get_ndata_from_range(bins_boundaries,bins_values, a,b):
+	for i in range(len(bins_boundaries)-1):
+		if a > bins_boundaries[i] and a< bins_boundaries[i+1]:
+			a_bin = i
+			
+		
+		if b > bins_boundaries[i] and b< bins_boundaries[i+1]:
+
+			b_bin = i
+
+	estimated_data = 0
+	if a_bin == b_bin:
+		diff = b - a
+		diff_bin = bins_boundaries[b_bin+1] - bins_boundaries[a_bin]
+		percentage = diff/diff_bin
+		estimated_data = percentage * bins_values[a_bin]
+	elif a_bin != b_bin:
+		a_diff_bin = bins_boundaries[a_bin+1] - bins_boundaries[a_bin]
+		a_percentage = (bins_boundaries[a_bin+1]-a) / a_diff_bin
+		
+		b_diff_bin = bins_boundaries[b_bin+1] - bins_boundaries[b_bin]
+		b_percentage = (b-bins_boundaries[b_bin]) / b_diff_bin
+		
+		
+		
+		estimated_data = a_percentage*bins_values[a_bin] + b_percentage*bins_values[b_bin]
+		for i in range(a_bin+1, b_bin):
+			estimated_data += bins_values[i]
+			
+		
+	print(estimated_data)
+
+def get_actual_ndata(income_data,a,b):
+	c = 0
+	for i in range(len(income_data)-1):
+		if income_data[i]>=a and income_data[i]<b:
+			c += 1
+	print(c)
+
 def main():
 
 	income_data = get_income_data('acs2015_census_tract_data.csv')
 	a,b = equiwidth_histogram(income_data, 100)
 	c,d = equidepth_histogram(income_data, 100)
-	print_histograms(income_data,a,b,c,d)
+	get_ndata_from_range(a,b,19000,55000)
+	get_ndata_from_range(c,d,19000,55000)
+	get_actual_ndata(income_data,19000,55000)
+
+
 
 main()
